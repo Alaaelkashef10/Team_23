@@ -74,4 +74,40 @@ const saveCourses = () => {
     }
 };
 
+const saveStudents = () => {
+    try {
+        localStorage.setItem('sms_data', JSON.stringify(students));
+    } catch (err) {
+        console.error('[SMS] Could not save students:', err);
+    }
+};
+
+const saveCourses = () => {
+    try {
+        localStorage.setItem('courses_data', JSON.stringify(courses));
+    } catch (err) {
+        console.error('[SMS] Could not save courses:', err);
+    }
+};
+
+
 loadFromStorage();
+
+
+
+const saveStudents = () => {
+    try {
+        localStorage.setItem('sms_data', JSON.stringify(students));
+    } catch (err) {
+        console.error('[SMS] Could not save students:', err);
+    }
+};
+
+const saveCourses = () => {
+    try {
+        localStorage.setItem('courses_data', JSON.stringify(courses));
+    } catch (err) {
+        console.error('[SMS] Could not save courses:', err);
+    }
+};
+
