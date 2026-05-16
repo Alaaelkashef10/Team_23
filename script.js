@@ -91,7 +91,6 @@ const saveCourses = () => {
 };
 
 
-loadFromStorage();
 
 
 
@@ -111,3 +110,104 @@ const saveCourses = () => {
     }
 };
 
+
+loadFromStorage();
+
+
+// ============================================================
+// 7. Cookies
+//    Store & restore last-used username preference
+// ============================================================
+
+/** Set a cookie with optional expiry in days */
+const setCookie = (name, value, days = 30) => {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Lax`;
+};
+
+/** Get a cookie value by name; returns null if not found */
+const getCookie = name => {
+    const match = document.cookie
+        .split('; ')
+        .find(row => row.startsWith(encodeURIComponent(name) + '='));
+    return match ? decodeURIComponent(match.split('=')[1]) : null;
+};
+
+/** Delete a cookie */
+const deleteCookie = name => {
+    document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+};
+
+// Pre-fill username from cookie on page load
+const savedUser = getCookie('sms_last_user');
+if (savedUser) {
+    const userInput = document.getElementById('usernameInput');
+    if (userInput) userInput.value = savedUser;
+}
+
+// ============================================================
+// 10. Dynamic UI & User Feedback
+//     Custom popup system (replaces native alert/confirm)
+// ============================================================
+
+
+const showPopup = ({
+    title = 'Notice',
+    message = '',
+    icon = 'ℹ️',
+    type = 'info',
+    onConfirm = null,
+    showCancel = false,
+    confirmLabel = 'OK',
+    cancelLabel = 'Cancel'
+} = {}) => {
+
+    const overlay = document.getElementById('popupOverlay');
+    const card = document.getElementById('popupCard');
+
+    document.getElementById('popupIcon').textContent = icon;
+    document.getElementById('popupTitle').textContent = title;
+    document.getElementById('popupMessage').textContent = message;
+
+    overlay.className = 'popup-overlay';
+    overlay.classList.add(`popup-${type}`);
+    overlay.style.display = 'flex';
+    overlay.classList.add('active');
+
+    const actions = document.getElementById('popupActions');
+
+    actions.innerHTML = '';
+
+    const confirmBtn = document.createElement('button');
+    confirmBtn.className = 'popup-btn-confirm';
+    confirmBtn.textContent = confirmLabel;
+
+    confirmBtn.addEventListener('click', () => {
+        closePopup();
+        if (onConfirm) onConfirm();
+    });
+
+    actions.appendChild(confirmBtn);
+
+    if (showCancel) {
+        const cancelBtn = document.createElement('button');
+
+        cancelBtn.className = 'popup-btn-cancel';
+        cancelBtn.textContent = cancelLabel;
+
+        cancelBtn.addEventListener('click', closePopup);
+
+        actions.appendChild(cancelBtn);
+    }
+
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = '';
+};
+
+
+const closePopup = () => {
+    const overlay = document.getElementById('popupOverlay');
+    overlay.classList.remove('active');
+    overlay.style.display = 'none';
+};
